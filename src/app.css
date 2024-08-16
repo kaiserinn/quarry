@@ -1,0 +1,16 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+    font-family: "Fira Code", monospace;
+}
+
+html {
+    background-color: rgb(var(--ctp-base));
+    min-height: 100vh;
+}
+
+body:has(dialog[open]) {
+    overflow: hidden;
+}
