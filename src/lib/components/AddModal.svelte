@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Link, Microscope, Pin, Plus, Tag, X } from "lucide-svelte";
     import type { Gem } from "../types";
-    import { saveGem } from "../utils";
+    import { gems } from "../utils";
 
     export let showModal: boolean;
 
@@ -38,7 +38,7 @@
             newTagValue = "";
             tagDialog.hidePopover();
         }
-    }
+   }
 
     function showAddLinkPopover(e: MouseEvent) {
         const mouseX = e.clientX;
@@ -50,7 +50,6 @@
 
     function addLink() {
         if (newLinkValue) {
-            console.log(newLinkValue);
             const newLink = !newLinkValue.startsWith("https://")
                 ? `https://${newLinkValue}`
                 : newLinkValue;
@@ -73,8 +72,8 @@
             title, id, content, cooked, pinned, date, tags, links
         };
 
-        console.log(newGem);
-        saveGem(newGem);
+        $gems = [newGem, ...$gems];
+        localStorage.setItem("gems", JSON.stringify($gems));
 
         titleInputValue = "";
         contentInputValue = "";
@@ -97,7 +96,7 @@
         <X size="16" />
     </button>
     <form on:submit|preventDefault={researchGem} class="flex flex-col gap-6 bg-ctp-surface1 pb-4 resize-y overflow-auto min-h-[26rem]">
-        <fieldset class="flex flex-col flex-grow">
+        <section class="flex flex-col flex-grow">
             <input
                 bind:value={titleInputValue}
                 type="text"
@@ -115,8 +114,8 @@
                 wrap="off"
                 class="bg-ctp-surface1 px-6 pb-6 text-ctp-text placeholder-ctp-subtext0 focus:outline-none resize-none flex-grow"
             ></textarea>
-        </fieldset>
-        <div class="flex gap-4 bg-ctp-surface1 px-6">
+        </section>
+        <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Tag class="max-w-[24px] flex-shrink-0" />
             <div class="flex flex-wrap gap-2">
                 {#each tags as tag}
@@ -133,7 +132,7 @@
                     id="add-tag"
                     class="rounded-md inset-[unset]"
                 >
-                    <form method="dialog" class="flex bg-ctp-surface0">
+                    <div class="flex bg-ctp-surface0">
                         <input
                             type="text"
                             bind:value={newTagValue}
@@ -146,12 +145,12 @@
                         >
                             <Plus size="16" />
                         </button>
-                    </form>
+                    </div>
                 </dialog>
             </div>
-        </div>
+        </section>
 
-        <div class="flex gap-4 bg-ctp-surface1 px-6">
+        <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Link class="flex-shrink-0" />
             <div class="flex flex-wrap gap-4">
                 {#each links as link}
@@ -166,7 +165,7 @@
                     id="add-tag"
                     class="inset-[unset] rounded-md"
                 >
-                    <form method="dialog" class="flex bg-ctp-surface0">
+                    <div class="flex bg-ctp-surface0">
                         <input
                             type="text"
                             bind:value={newLinkValue}
@@ -179,14 +178,14 @@
                         >
                             <Plus size="16" />
                         </button>
-                    </form>
+                    </div>
                 </dialog>
             </div>
-        </div>
+        </section>
 
         <div class="border-t-[1px] my-[-0.5rem] border-t-ctp-text text-ctp-base"></div>
 
-        <div class="flex justify-between px-4">
+        <section class="flex justify-between px-4">
             <label
                 class="flex cursor-pointer select-none gap-2 rounded-md px-2 py-2 hover:text-white has-[:checked]:bg-ctp-mauve has-[:checked]:text-ctp-surface0 has-[:checked]:hover:opacity-90"
             >
@@ -200,7 +199,7 @@
                 <Microscope />
                 Research
             </button>
-        </div>
+        </section>
     </form>
 </dialog>
 

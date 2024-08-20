@@ -3,9 +3,12 @@
     import Card from "./lib/components/Card.svelte";
     import Sidebar from "./lib/components/Sidebar.svelte";
     import { getGems, gems } from "./lib/utils";
+    import ContextMenu from "./lib/components/ContextMenu.svelte";
+
+    let contextMenu: ContextMenu;
 </script>
 
-<svelte:body class="bg-ctp-base" />
+<ContextMenu bind:this={contextMenu} />
 
 <div class="flex min-h-screen overflow-visible bg-ctp-base text-ctp-text">
     <Sidebar />
@@ -21,7 +24,7 @@
                 class="mx-auto grid max-w-[calc(var(--n)*23rem+((var(--n)-1)*1rem))] auto-rows-[10px] grid-cols-[repeat(auto-fit,_23rem)] justify-center [--n:_5]"
             >
                 {#each $gems as gem (gem.id)}
-                    <Card {gem} />
+                    <Card {gem} {contextMenu} />
                 {/each}
             </section>
         {:catch error}

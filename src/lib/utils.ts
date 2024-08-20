@@ -24,10 +24,3 @@ export async function getGems(): Promise<void> {
     localStorage.setItem("gems", JSON.stringify(data));
     gems.set(data);
 }
-
-export function saveGem(gem: Gem): void {
-    gems.update(prev => [gem, ...prev,]);
-    gems.subscribe(values => {
-        localStorage.setItem("gems", JSON.stringify(values));
-    });
-}

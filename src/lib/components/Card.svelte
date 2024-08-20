@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { Calendar, Check, EllipsisVertical, Link, Tag, Trash2, X } from "lucide-svelte";
+    import { Calendar, Check, Link, Tag, X } from "lucide-svelte";
     import type { Gem } from "../types";
     import { onMount } from "svelte";
     import { gems } from "../utils";
+    import ContextMenu from "./ContextMenu.svelte";
 
     export let gem: Gem;
+    export let contextMenu: ContextMenu;
 
     let card: HTMLElement;
 
@@ -14,19 +16,15 @@
         card.style.gridRow = `span ${span}`;
     });
 
-    function toggleCooked(): void {
-        $gems.forEach((v) => {
-            if (v.id === gem.id) {
-                v.cooked = !v.cooked;
-                gem.cooked = v.cooked;
-            } 
-        })
+    async function toggleCooked() {
+        gem.cooked = !gem.cooked;
         localStorage.setItem("gems", JSON.stringify($gems));
     }
 </script>
 
 <article
     bind:this={card}
+    on:contextmenu|preventDefault={(e) => contextMenu.openContextMenu(e, gem)}
     class="group m-2 flex flex-col gap-4 rounded-xl bg-ctp-surface0 p-5 text-sm text-ctp-subtext0 hover:text-white"
 >
     <hgroup class="flex justify-between gap-4 text-xl">
