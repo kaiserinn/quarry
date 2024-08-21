@@ -4,27 +4,32 @@
     import { gems } from "../utils";
 
     export let showModal: boolean;
+    export let state: "ADD" | "EDIT";
+
+    export let gem: Gem = {
+        title: "",
+        id: "",
+        date: "",
+        cooked: false,
+        pinned: false,
+        tags: [],
+        links: [],
+        content: "",
+    };
 
     let dialog: HTMLDialogElement;
 
     let tagDialog: HTMLDialogElement;
-    let tags: string[] = [];
     let newTagValue: string;
 
     let linkDialog: HTMLDialogElement;
-    let links: string[] = [];
     let newLinkValue: string;
-
-    let isPinned = false;
-
-    let titleInputValue: string;
-    let contentInputValue: string;
 
     $: if (showModal) {
         dialog?.showModal();
     }
 
-    function showAddTagPopover(e: MouseEvent) {
+    function showAddTagPopover(e: MouseEvent): void {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         tagDialog.style.top = mouseY + "px";
@@ -32,15 +37,15 @@
         tagDialog.showPopover();
     }
 
-    function addTag() {
+    function addTag(): void {
         if (newTagValue) {
-            tags = [...tags, newTagValue];
+            gem.tags = gem.tags.concat(newTagValue);
             newTagValue = "";
             tagDialog.hidePopover();
         }
    }
 
-    function showAddLinkPopover(e: MouseEvent) {
+    function showAddLinkPopover(e: MouseEvent): void {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         linkDialog.style.top = mouseY + "px";
@@ -48,39 +53,46 @@
         linkDialog.showPopover();
     }
 
-    function addLink() {
+    function addLink(): void {
         if (newLinkValue) {
             const newLink = !newLinkValue.startsWith("https://")
                 ? `https://${newLinkValue}`
                 : newLinkValue;
-            links = [...links, newLink];
+            gem.links = gem.links.concat(newLink);
             newLinkValue = "";
             linkDialog.hidePopover();
         }
     }
 
-    function researchGem() {
-        const id = crypto.randomUUID();
-        const title = titleInputValue;
-        const content = contentInputValue ? contentInputValue : undefined;
-        const cooked = false;
-        const pinned = isPinned;
-        const today = new Date();
-        const date = `${today.getDate()}-${today.getMonth()}-${today.getFullYear()}`
+    function researchGem(): void {
+        if (state === "ADD") {
+            gem.id = crypto.randomUUID();
+            const date = new Date();
+            gem.date = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`
 
-        const newGem: Gem = {
-            title, id, content, cooked, pinned, date, tags, links
-        };
+            $gems = [gem].concat($gems);
+        } else if (state === "EDIT") {
+            $gems = $gems;
+        }
 
-        $gems = [newGem, ...$gems];
         localStorage.setItem("gems", JSON.stringify($gems));
 
-        titleInputValue = "";
-        contentInputValue = "";
-        tags = [];
-        links = []
-        isPinned = false;
         dialog.close();
+    }
+
+    function handleClose(): void {
+        gem = {
+            title: "",
+            id: "",
+            date: "",
+            cooked: false,
+            pinned: false,
+            tags: [],
+            links: [],
+            content: "",
+        };
+
+        showModal = false;
     }
 </script>
 
@@ -88,7 +100,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
     bind:this={dialog}
-    on:close={() => showModal = false}
+    on:close={handleClose}
     on:click|self={() => dialog.close()}
     class="w-[30rem] rounded-xl bg-ctp-surface0 text-ctp-text backdrop:backdrop-blur backdrop:backdrop-brightness-75"
 >
@@ -98,7 +110,7 @@
     <form on:submit|preventDefault={researchGem} class="flex flex-col gap-6 bg-ctp-surface1 pb-4 resize-y overflow-auto min-h-[26rem]">
         <section class="flex flex-col flex-grow">
             <input
-                bind:value={titleInputValue}
+                bind:value={gem.title}
                 type="text"
                 required
                 placeholder="Title"
@@ -106,7 +118,7 @@
                 class="bg-ctp-surface1 px-6 pb-4 pt-8 text-2xl text-white placeholder-ctp-text focus:outline-none"
             />
             <textarea
-                bind:value={contentInputValue}
+                bind:value={gem.content}
                 rows="5"
                 placeholder="Fruitful thought..."
                 autocomplete="off"
@@ -118,7 +130,7 @@
         <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Tag class="max-w-[24px] flex-shrink-0" />
             <div class="flex flex-wrap gap-2">
-                {#each tags as tag}
+                {#each gem.tags as tag}
                     <p class="rounded-full bg-ctp-red px-2 text-sm font-bold text-ctp-crust">
                         {tag}
                     </p>
@@ -153,7 +165,7 @@
         <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Link class="flex-shrink-0" />
             <div class="flex flex-wrap gap-4">
-                {#each links as link}
+                {#each gem.links as link}
                     <a href={link} class="underline hover:text-white">{link.split("/")[2]}</a>
                 {/each}
                 <button on:click|preventDefault={showAddLinkPopover} class="hover:text-white">
@@ -189,7 +201,7 @@
             <label
                 class="flex cursor-pointer select-none gap-2 rounded-md px-2 py-2 hover:text-white has-[:checked]:bg-ctp-mauve has-[:checked]:text-ctp-surface0 has-[:checked]:hover:opacity-90"
             >
-                <input bind:checked={isPinned} type="checkbox" hidden />
+                <input bind:checked={gem.pinned} type="checkbox" hidden />
                 <Pin />
                 Pin
             </label>

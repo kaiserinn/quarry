@@ -4,7 +4,7 @@ export type Gem = {
     date: string;
     cooked: boolean;
     pinned: boolean;
-    tags?: string[];
-    links?: string[];
-    content?: string | undefined;
+    tags: string[];
+    links: string[];
+    content: string;
 };

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Calendar, Check, Link, Tag, X } from "lucide-svelte";
     import type { Gem } from "../types";
-    import { onMount } from "svelte";
+    import { afterUpdate } from "svelte";
     import { gems } from "../utils";
     import ContextMenu from "./ContextMenu.svelte";
 
@@ -10,7 +10,8 @@
 
     let card: HTMLElement;
 
-    onMount(async () => {
+    afterUpdate(async () => {
+        card.style.gridRow = `span 1`;
         const height = card.scrollHeight;
         const span = Math.ceil((height + 32) / 10);
         card.style.gridRow = `span ${span}`;

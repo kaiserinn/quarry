@@ -3,7 +3,7 @@
     import type { Gem } from "../types";
     import YAML from "yaml";
     import { gems } from "../utils";
-    import AddModal from "./AddModal.svelte";
+    import GemModal from "./GemModal.svelte";
 
     let showModal = false;
 
@@ -38,5 +38,5 @@
         </button>
     </section>
 
-    <AddModal bind:showModal />
+    <GemModal bind:showModal state="ADD" />
 </aside>

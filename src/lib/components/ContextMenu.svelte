@@ -1,12 +1,24 @@
 <script lang="ts">
     import { tick } from "svelte";
     import { gems } from "../utils";
-    import { Check, Trash2, X } from "lucide-svelte";
+    import { Check, Pencil, Trash2, X } from "lucide-svelte";
     import type { Gem } from "../types";
+    import GemModal from "./GemModal.svelte";
 
-    let gem: Gem;
+    let gem = {
+        title: "",
+        id: "",
+        date: "",
+        cooked: false,
+        pinned: false,
+        tags: [],
+        links: [],
+        content: "",
+    } as Gem;
+
     let showContextMenu = false;
     let contextMenuEl: HTMLDivElement;
+    let showModal = false;
 
     export async function openContextMenu(e: MouseEvent, gemProp: Gem): Promise<void> {
         gem = gemProp;
@@ -43,13 +55,11 @@
 
         localStorage.setItem("gems", JSON.stringify($gems));
     }
-
-    function closeContextMenu() {
-        showContextMenu = false;
-    }
 </script>
 
-<svelte:window on:click={closeContextMenu} />
+<svelte:window on:click={() => showContextMenu = false} />
+
+<GemModal bind:showModal state="EDIT" gem={gem} />
 
 {#if showContextMenu}
     <div
@@ -70,6 +80,13 @@
             >
                 <Trash2 class="w-[1em] h-[1em]" />
                 Delete Gem
+            </button>
+            <button
+                on:click={() => showModal = true}
+                class="flex items-center gap-4 px-2 rounded py-2 hover:bg-ctp-mauve hover:text-ctp-base"
+            >
+                <Pencil class="w-[1em] h-[1em]" />
+                Edit Gem
             </button>
         </div>
     </div>
