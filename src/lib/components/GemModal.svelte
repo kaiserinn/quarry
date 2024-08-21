@@ -25,15 +25,21 @@
     let linkDialog: HTMLDialogElement;
     let newLinkValue: string;
 
+    let textareaEl: HTMLTextAreaElement;
+
     $: if (showModal) {
         dialog?.showModal();
     }
 
     function showAddTagPopover(e: MouseEvent): void {
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        tagDialog.style.top = mouseY + "px";
-        tagDialog.style.left = mouseX + "px";
+        if (!e.clientX && !e.clientY) {
+            tagDialog.style.top = "50%";
+            tagDialog.style.left = "50%";
+            tagDialog.style.transform = "translate(-50%, -50%)";
+        } else {
+            tagDialog.style.top = e.clientY + "px";
+            tagDialog.style.left = e.clientX + "px";
+        }
         tagDialog.showPopover();
     }
 
@@ -46,10 +52,14 @@
    }
 
     function showAddLinkPopover(e: MouseEvent): void {
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
-        linkDialog.style.top = mouseY + "px";
-        linkDialog.style.left = mouseX + "px";
+        if (!e.clientX && !e.clientY) {
+            linkDialog.style.top = "50%";
+            linkDialog.style.left = "50%";
+            linkDialog.style.transform = "translate(-50%, -50%)";
+        } else {
+            linkDialog.style.top = e.clientY + "px";
+            linkDialog.style.left = e.clientX + "px";
+        }
         linkDialog.showPopover();
     }
 
@@ -107,10 +117,19 @@
     <button on:click={() => dialog.close()} class="absolute right-1 top-1 p-4 hover:text-white">
         <X size="16" />
     </button>
-    <form on:submit|preventDefault={researchGem} class="flex flex-col gap-6 bg-ctp-surface1 pb-4 resize-y overflow-auto min-h-[26rem]">
+    <form
+        on:submit|preventDefault={researchGem}
+        class="flex flex-col gap-6 bg-ctp-surface1 pb-4 resize-y overflow-auto min-h-[26rem]"
+    >
         <section class="flex flex-col flex-grow">
             <input
                 bind:value={gem.title}
+                on:keydown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        textareaEl.focus();
+                    }
+                }}
                 type="text"
                 required
                 placeholder="Title"
@@ -118,6 +137,7 @@
                 class="bg-ctp-surface1 px-6 pb-4 pt-8 text-2xl text-white placeholder-ctp-text focus:outline-none"
             />
             <textarea
+                bind:this={textareaEl}
                 bind:value={gem.content}
                 rows="5"
                 placeholder="Fruitful thought..."
@@ -129,17 +149,18 @@
         </section>
         <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Tag class="max-w-[24px] flex-shrink-0" />
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 items-center">
                 {#each gem.tags as tag}
                     <p class="rounded-full bg-ctp-red px-2 text-sm font-bold text-ctp-crust">
                         {tag}
                     </p>
                 {/each}
-                <button on:click|preventDefault={showAddTagPopover} class="hover:text-white">
+                <button on:click|preventDefault={showAddTagPopover} class="hover:text-white self-stretch">
                     <Plus size="16" />
                 </button>
                 <dialog
                     bind:this={tagDialog}
+                    on:toggle={() => newTagValue = ""}
                     popover="auto"
                     id="add-tag"
                     class="rounded-md inset-[unset]"
@@ -148,12 +169,18 @@
                         <input
                             type="text"
                             bind:value={newTagValue}
+                            on:keydown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    addTag();
+                                }
+                            } }
                             placeholder="Add a new tag..."
                             class="bg-ctp-surface0 px-4 py-2 text-ctp-text focus:outline-none"
                         />
                         <button
                             on:click|preventDefault={addTag}
-                            class="pr-2 text-ctp-text hover:text-white"
+                            class="mr-2 text-ctp-text hover:text-white"
                         >
                             <Plus size="16" />
                         </button>
@@ -164,15 +191,16 @@
 
         <section class="flex gap-4 bg-ctp-surface1 px-6">
             <Link class="flex-shrink-0" />
-            <div class="flex flex-wrap gap-4">
+            <div class="flex flex-wrap gap-4 items-center">
                 {#each gem.links as link}
-                    <a href={link} class="underline hover:text-white">{link.split("/")[2]}</a>
+                    <a href={link} class="underline decoration-[0.1em] underline-offset-2 hover:text-white">{link.split("/")[2]}</a>
                 {/each}
-                <button on:click|preventDefault={showAddLinkPopover} class="hover:text-white">
+                <button on:click|preventDefault={showAddLinkPopover} class="hover:text-white self-stretch">
                     <Plus size="16" />
                 </button>
                 <dialog
                     bind:this={linkDialog}
+                    on:toggle={() => newLinkValue = ""}
                     popover="auto"
                     id="add-tag"
                     class="inset-[unset] rounded-md"
@@ -181,12 +209,18 @@
                         <input
                             type="text"
                             bind:value={newLinkValue}
+                            on:keydown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    addLink();
+                                }
+                            } }
                             placeholder="Add a new link..."
                             class="bg-ctp-surface0 px-4 py-2 text-ctp-text focus:outline-none"
                         />
                         <button
                             on:click|preventDefault={addLink}
-                            class="pr-2 text-ctp-text hover:text-white"
+                            class="mr-2 text-ctp-text hover:text-white"
                         >
                             <Plus size="16" />
                         </button>
@@ -205,9 +239,7 @@
                 <Pin />
                 Pin
             </label>
-            <button
-                class="flex gap-2 rounded-md bg-ctp-mauve px-4 py-2 text-ctp-base hover:opacity-90"
-            >
+            <button class="flex gap-2 rounded-md bg-ctp-mauve px-4 py-2 text-ctp-base hover:opacity-90">
                 <Microscope />
                 Research
             </button>
