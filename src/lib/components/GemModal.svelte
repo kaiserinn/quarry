@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { Link, Microscope, Pin, Plus, Tag, X } from "lucide-svelte";
+    import { Microscope, Pin, X } from "lucide-svelte";
     import type { Gem } from "../types";
     import { gems } from "../utils";
+    import AttributeGroup from "./AttributeGroup.svelte";
 
     export let showModal: boolean;
     export let state: "ADD" | "EDIT";
@@ -18,60 +19,10 @@
     };
 
     let dialog: HTMLDialogElement;
-
-    let tagDialog: HTMLDialogElement;
-    let newTagValue: string;
-
-    let linkDialog: HTMLDialogElement;
-    let newLinkValue: string;
-
     let textareaEl: HTMLTextAreaElement;
 
     $: if (showModal) {
         dialog?.showModal();
-    }
-
-    function showAddTagPopover(e: MouseEvent): void {
-        if (!e.clientX && !e.clientY) {
-            tagDialog.style.top = "50%";
-            tagDialog.style.left = "50%";
-            tagDialog.style.transform = "translate(-50%, -50%)";
-        } else {
-            tagDialog.style.top = e.clientY + "px";
-            tagDialog.style.left = e.clientX + "px";
-        }
-        tagDialog.showPopover();
-    }
-
-    function addTag(): void {
-        if (newTagValue) {
-            gem.tags = gem.tags.concat(newTagValue);
-            newTagValue = "";
-            tagDialog.hidePopover();
-        }
-   }
-
-    function showAddLinkPopover(e: MouseEvent): void {
-        if (!e.clientX && !e.clientY) {
-            linkDialog.style.top = "50%";
-            linkDialog.style.left = "50%";
-            linkDialog.style.transform = "translate(-50%, -50%)";
-        } else {
-            linkDialog.style.top = e.clientY + "px";
-            linkDialog.style.left = e.clientX + "px";
-        }
-        linkDialog.showPopover();
-    }
-
-    function addLink(): void {
-        if (newLinkValue) {
-            const newLink = !newLinkValue.startsWith("https://")
-                ? `https://${newLinkValue}`
-                : newLinkValue;
-            gem.links = gem.links.concat(newLink);
-            newLinkValue = "";
-            linkDialog.hidePopover();
-        }
     }
 
     function researchGem(): void {
@@ -119,7 +70,7 @@
     </button>
     <form
         on:submit|preventDefault={researchGem}
-        class="flex flex-col gap-6 bg-ctp-surface1 pb-4 resize-y overflow-auto min-h-[26rem]"
+        class="flex flex-col gap-6 bg-ctp-surface1 pb-4 overflow-auto min-h-[26rem]"
     >
         <section class="flex flex-col flex-grow">
             <input
@@ -139,95 +90,17 @@
             <textarea
                 bind:this={textareaEl}
                 bind:value={gem.content}
-                rows="5"
+                rows="10"
                 placeholder="Fruitful thought..."
                 autocomplete="off"
                 spellcheck="false"
-                wrap="off"
                 class="bg-ctp-surface1 px-6 pb-6 text-ctp-text placeholder-ctp-subtext0 focus:outline-none resize-none flex-grow"
             ></textarea>
         </section>
-        <section class="flex gap-4 bg-ctp-surface1 px-6">
-            <Tag class="max-w-[24px] flex-shrink-0" />
-            <div class="flex flex-wrap gap-2 items-center">
-                {#each gem.tags as tag}
-                    <p class="rounded-full bg-ctp-red px-2 text-sm font-bold text-ctp-crust">
-                        {tag}
-                    </p>
-                {/each}
-                <button on:click|preventDefault={showAddTagPopover} class="hover:text-white self-stretch">
-                    <Plus size="16" />
-                </button>
-                <dialog
-                    bind:this={tagDialog}
-                    on:toggle={() => newTagValue = ""}
-                    popover="auto"
-                    id="add-tag"
-                    class="rounded-md inset-[unset]"
-                >
-                    <div class="flex bg-ctp-surface0">
-                        <input
-                            type="text"
-                            bind:value={newTagValue}
-                            on:keydown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    addTag();
-                                }
-                            } }
-                            placeholder="Add a new tag..."
-                            class="bg-ctp-surface0 px-4 py-2 text-ctp-text focus:outline-none"
-                        />
-                        <button
-                            on:click|preventDefault={addTag}
-                            class="mr-2 text-ctp-text hover:text-white"
-                        >
-                            <Plus size="16" />
-                        </button>
-                    </div>
-                </dialog>
-            </div>
-        </section>
 
-        <section class="flex gap-4 bg-ctp-surface1 px-6">
-            <Link class="flex-shrink-0" />
-            <div class="flex flex-wrap gap-4 items-center">
-                {#each gem.links as link}
-                    <a href={link} class="underline decoration-[0.1em] underline-offset-2 hover:text-white">{link.split("/")[2]}</a>
-                {/each}
-                <button on:click|preventDefault={showAddLinkPopover} class="hover:text-white self-stretch">
-                    <Plus size="16" />
-                </button>
-                <dialog
-                    bind:this={linkDialog}
-                    on:toggle={() => newLinkValue = ""}
-                    popover="auto"
-                    id="add-tag"
-                    class="inset-[unset] rounded-md"
-                >
-                    <div class="flex bg-ctp-surface0">
-                        <input
-                            type="text"
-                            bind:value={newLinkValue}
-                            on:keydown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    addLink();
-                                }
-                            } }
-                            placeholder="Add a new link..."
-                            class="bg-ctp-surface0 px-4 py-2 text-ctp-text focus:outline-none"
-                        />
-                        <button
-                            on:click|preventDefault={addLink}
-                            class="mr-2 text-ctp-text hover:text-white"
-                        >
-                            <Plus size="16" />
-                        </button>
-                    </div>
-                </dialog>
-            </div>
-        </section>
+        <AttributeGroup bind:attributes={gem.tags} attributeType="TAG" />
+
+        <AttributeGroup bind:attributes={gem.links} attributeType="LINK" />
 
         <div class="border-t-[1px] my-[-0.5rem] border-t-ctp-text text-ctp-base"></div>
 
