@@ -21,8 +21,18 @@
     let dialog: HTMLDialogElement;
     let textareaEl: HTMLTextAreaElement;
 
+    // Backup gem in case the modal is closed mid edit
+    let backupGem: Gem;
+
     $: if (showModal) {
         dialog?.showModal();
+        generateBackupGem();
+    }
+
+    function generateBackupGem() {
+        if (state === "EDIT") {
+            backupGem = structuredClone(gem);
+        }
     }
 
     function researchGem(): void {
@@ -42,6 +52,17 @@
     }
 
     function handleClose(): void {
+
+        // because gem is a reference to the gems store, gem needs to go back
+        // to its initial value if the modal is closed mid edit
+        if (state === "EDIT") {
+            gem.title = backupGem.title;
+            gem.pinned = backupGem.pinned;
+            gem.tags = backupGem.tags;
+            gem.links = backupGem.links;
+            gem.content = backupGem.content;
+        }
+
         gem = {
             title: "",
             id: "",
