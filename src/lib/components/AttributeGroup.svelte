@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Link, Plus, Tag, X } from "lucide-svelte";
+    import { onMount } from "svelte";
 
     export let attributes: string[];
     export let attributeType: "TAG" | "LINK";
@@ -29,6 +30,8 @@
         dialog.showPopover();
         updatePosition();
     }
+
+    onMount(showAddPopover);
 
     function addHandler(): void {
         if (newAttribute) {
@@ -82,7 +85,7 @@
                 <div class="flex items-center gap-1">
                     <a
                         href={attribute.split(" ")[0]}
-                        class="underline decoration-[0.1em] underline-offset-2 hover:text-text-100 font-mono"
+                        class="font-mono underline decoration-[0.1em] underline-offset-2 hover:text-text-100"
                     >
                         {attribute.split(" ").at(-1)}
                     </a>
@@ -107,35 +110,46 @@
             on:toggle={clearInput}
             popover="auto"
             id="add-tag"
-            class="inset-[unset] rounded-md bg-background-300"
+            class="inset-[unset] rounded-md bg-background-200 shadow"
         >
-            <div class="flex text-text-300 rounded-md border border-border-300/25">
-                <div class="flex flex-col">
+            <div
+                class="flex flex-col gap-3 rounded-md border border-border-300/25 p-3 font-mono text-text-300"
+            >
+                <h1 class="font-serif text-2xl text-text-100">
+                    {attributeType === "TAG" ? "Add a New Tag" : "Add a New Link"}
+                </h1>
+                <fieldset class="grid grid-cols-[auto,_1fr] items-center gap-2">
+                    <label for="new-attribute" class=""
+                        >{attributeType === "TAG" ? "Tag" : "Link"}</label
+                    >
                     <input
                         type="text"
                         bind:value={newAttribute}
                         on:keydown={handleEnter}
-                        placeholder={attributeType === "TAG"
-                            ? "Add a new tag..."
-                            : "Add a new link..."}
-                        class="bg-background-300 px-4 py-2 placeholder:text-text-500 focus:outline-none"
+                        placeholder={attributeType === "TAG" ? "Tag name..." : "Link URL..."}
+                        id="new-attribute"
+                        class="rounded-md border border-border-300/50 bg-background-200 px-4 py-1 placeholder:text-text-500 focus:outline focus:outline-[1px] focus:outline-border-400"
                     />
+
                     {#if attributeType === "LINK"}
+                        <label for="new-attribute" class="">Name</label>
                         <input
                             type="text"
                             bind:value={linkAlias}
                             on:keydown={handleEnter}
                             placeholder="Optional name..."
-                            class="bg-background-300 px-4 py-2 placeholder:text-text-500 focus:outline-none"
+                            class="rounded-md border border-border-300/50 bg-background-200 px-4 py-1 placeholder:text-text-500 focus:outline focus:outline-[1px] focus:outline-border-400"
                         />
                     {/if}
-                </div>
-                <button
-                    on:click|preventDefault={addHandler}
-                    class="mr-2 text-text-300 hover:text-text-100"
-                >
-                    <Plus size="16" />
-                </button>
+                </fieldset>
+                <section>
+                    <button
+                        on:click|preventDefault={addHandler}
+                        class="gap-2font-serif ml-auto flex items-center rounded-md bg-accent-main-200 px-2 py-1 text-text-300 text-white hover:bg-accent-main-100"
+                    >
+                        <Plus size="16" /> Add
+                    </button>
+                </section>
             </div>
         </dialog>
     </div>
