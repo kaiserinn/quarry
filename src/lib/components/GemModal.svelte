@@ -39,7 +39,7 @@
         if (state === "ADD") {
             gem.id = crypto.randomUUID();
             const date = new Date();
-            gem.date = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`
+            gem.date = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
 
             $gems = [gem].concat($gems);
         } else if (state === "EDIT") {
@@ -52,7 +52,6 @@
     }
 
     function handleClose(): void {
-
         // because gem is a reference to the gems store, gem needs to go back
         // to its initial value if the modal is closed mid edit
         if (state === "EDIT") {
@@ -84,16 +83,16 @@
     bind:this={dialog}
     on:close={handleClose}
     on:click|self={() => dialog.close()}
-    class="w-[30rem] rounded-xl bg-ctp-surface0 text-ctp-text backdrop:backdrop-blur backdrop:backdrop-brightness-75"
+    class="w-[30rem] rounded-xl bg-background-200 text-text-300 backdrop:backdrop-blur backdrop:backdrop-brightness-75"
 >
-    <button on:click={() => dialog.close()} class="absolute right-1 top-1 p-4 hover:text-white">
+    <button on:click={() => dialog.close()} class="absolute right-1 top-1 p-4 hover:text-text-100">
         <X size="16" />
     </button>
     <form
         on:submit|preventDefault={researchGem}
-        class="flex flex-col gap-6 bg-ctp-surface1 pb-4 overflow-auto min-h-[26rem]"
+        class="flex min-h-[26rem] flex-col gap-6 overflow-auto pb-4"
     >
-        <section class="flex flex-col flex-grow">
+        <section class="flex flex-grow flex-col">
             <input
                 bind:value={gem.title}
                 on:keydown={(e) => {
@@ -106,7 +105,7 @@
                 required
                 placeholder="Title"
                 autocomplete="off"
-                class="bg-ctp-surface1 px-6 pb-4 pt-8 text-2xl text-white placeholder-ctp-text focus:outline-none"
+                class="bg-background-200 px-6 pb-4 pt-8 text-2xl text-text-100 placeholder-text-300/80 focus:outline-none"
             />
             <textarea
                 bind:this={textareaEl}
@@ -115,7 +114,7 @@
                 placeholder="Fruitful thought..."
                 autocomplete="off"
                 spellcheck="false"
-                class="bg-ctp-surface1 px-6 pb-6 text-ctp-text placeholder-ctp-subtext0 focus:outline-none resize-none flex-grow"
+                class="flex-grow resize-none bg-background-200 px-6 pb-6 text-text-300 placeholder-text-300/50 focus:outline-none"
             ></textarea>
         </section>
 
@@ -123,17 +122,19 @@
 
         <AttributeGroup bind:attributes={gem.links} attributeType="LINK" />
 
-        <div class="border-t-[1px] my-[-0.5rem] border-t-ctp-text text-ctp-base"></div>
+        <div class="my-[-0.5rem] border-t border-t-border-300"></div>
 
         <section class="flex justify-between px-4">
             <label
-                class="flex cursor-pointer select-none gap-2 rounded-md px-2 py-2 hover:text-white has-[:checked]:bg-ctp-mauve has-[:checked]:text-ctp-surface0 has-[:checked]:hover:opacity-90"
+                class="flex cursor-pointer select-none gap-2 rounded-md px-2 py-2 hover:text-text-100 has-[:checked]:bg-accent-main-200 has-[:checked]:text-white has-[:checked]:hover:bg-accent-main-100"
             >
                 <input bind:checked={gem.pinned} type="checkbox" hidden />
                 <Pin />
                 Pin
             </label>
-            <button class="flex gap-2 rounded-md bg-ctp-mauve px-4 py-2 text-ctp-base hover:opacity-90">
+            <button
+                class="flex gap-2 rounded-md bg-accent-main-200 px-4 py-2 text-white hover:bg-accent-main-100"
+            >
                 <Microscope />
                 Research
             </button>

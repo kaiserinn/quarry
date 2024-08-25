@@ -8,20 +8,19 @@
     let contextMenu: ContextMenu;
 </script>
 
-<ContextMenu bind:this={contextMenu} />
-
-<div class="flex min-h-screen overflow-visible bg-ctp-base text-ctp-text">
+<div class="flex min-h-screen bg-background-300 font-serif text-text-300">
+    <ContextMenu bind:this={contextMenu} />
     <Sidebar />
 
     <main class="min-w-[26rem] flex-grow px-24 py-8">
         {#await getGems()}
-            <section class="flex h-full items-center justify-center text-3xl gap-4">
-                <LoaderCircle class="animate-spin w-[1em] h-[1em]" />
+            <section class="flex h-full items-center justify-center gap-4 text-3xl">
+                <LoaderCircle class="h-[1em] w-[1em] animate-spin" />
                 Loading...
             </section>
         {:then}
             <section
-                class="mx-auto grid max-w-[calc(var(--n)*23rem+((var(--n)-1)*1rem))] auto-rows-[10px] grid-cols-[repeat(auto-fit,_23rem)] justify-center [--n:_5]"
+                class="mx-auto grid max-w-[calc(var(--n)*25rem+((var(--n)-1)*1rem))] auto-rows-[10px] grid-cols-[repeat(auto-fit,_25rem)] justify-center [--n:_5]"
             >
                 {#each $gems as gem (gem.id)}
                     <Card {gem} {contextMenu} />

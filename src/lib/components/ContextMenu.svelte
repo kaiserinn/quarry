@@ -57,35 +57,34 @@
     }
 </script>
 
-<svelte:window on:click={() => showContextMenu = false} />
+<svelte:window on:click={() => (showContextMenu = false)} />
 
-<GemModal bind:showModal state="EDIT" gem={gem} />
+<GemModal bind:showModal state="EDIT" {gem} />
 
 {#if showContextMenu}
-    <div
-        bind:this={contextMenuEl}
-        class="absolute"    
-    >
-        <div class="p-3 flex flex-col rounded-md bg-ctp-mantle text-ctp-text shadow-md text-sm">
+    <div bind:this={contextMenuEl} class="absolute">
+        <div
+            class="flex flex-col rounded-md border border-border-300/25 bg-background-300 p-1 text-text-100 shadow-md"
+        >
             <button
                 on:click={toggleCooked}
-                class="flex items-center gap-4 px-2 rounded py-2 hover:bg-ctp-mauve hover:text-ctp-base"
+                class="hover:bg-accent-main-200 hover:text-white flex items-center gap-4 rounded px-4 py-2"
             >
-                <svelte:component this={gem.cooked ? X : Check} class="w-[1em] h-[1em]"/>
+                <svelte:component this={gem.cooked ? X : Check} class="h-[1em] w-[1em]" />
                 Mark As {gem.cooked ? "Raw" : "Cooked"}
             </button>
             <button
                 on:click={deleteGem}
-                class="flex items-center gap-4 px-2 rounded py-2 hover:bg-ctp-mauve hover:text-ctp-base"
+                class="hover:bg-accent-main-200 hover:text-white flex items-center gap-4 rounded px-4 py-2"
             >
-                <Trash2 class="w-[1em] h-[1em]" />
+                <Trash2 class="h-[1em] w-[1em]" />
                 Delete Gem
             </button>
             <button
-                on:click={() => showModal = true}
-                class="flex items-center gap-4 px-2 rounded py-2 hover:bg-ctp-mauve hover:text-ctp-base"
+                on:click={() => (showModal = true)}
+                class="hover:bg-accent-main-200 hover:text-white flex items-center gap-4 rounded px-4 py-2"
             >
-                <Pencil class="w-[1em] h-[1em]" />
+                <Pencil class="h-[1em] w-[1em]" />
                 Edit Gem
             </button>
         </div>

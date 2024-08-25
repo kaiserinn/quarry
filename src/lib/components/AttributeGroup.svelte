@@ -58,13 +58,17 @@
 
 <svelte:window on:resize={updatePosition} />
 
-<section class="flex gap-4 bg-ctp-surface1 px-6">
+<section class="flex gap-4 px-6">
     <svelte:component this={attributeType === "TAG" ? Tag : Link} class="flex-shrink-0" />
-    <div class="flex flex-wrap {attributeType === 'TAG' ? 'gap-2' : 'gap-4'} items-center">
+    <div
+        class="flex flex-wrap {attributeType === 'TAG'
+            ? 'gap-2'
+            : 'gap-4'} items-center text-text-300"
+    >
         {#each attributes as attribute}
             {#if attributeType === "TAG"}
                 <div
-                    class="flex cursor-default items-center gap-1 rounded-full bg-ctp-red px-2 text-sm font-bold text-ctp-crust"
+                    class="flex cursor-default items-center gap-1 rounded-full bg-accent-main-200 px-2 font-mono text-sm text-white"
                 >
                     {attribute}
                     <button
@@ -78,7 +82,7 @@
                 <div class="flex items-center gap-1">
                     <a
                         href={attribute.split(" ")[0]}
-                        class="underline decoration-[0.1em] underline-offset-2 hover:text-white"
+                        class="underline decoration-[0.1em] underline-offset-2 hover:text-text-100 font-mono"
                     >
                         {attribute.split(" ").at(-1)}
                     </a>
@@ -94,7 +98,7 @@
         <button
             bind:this={showPopoverButtonEl}
             on:click|preventDefault={showAddPopover}
-            class="self-stretch hover:text-white"
+            class="self-stretch hover:text-text-100"
         >
             <Plus size="16" />
         </button>
@@ -103,9 +107,9 @@
             on:toggle={clearInput}
             popover="auto"
             id="add-tag"
-            class="inset-[unset] rounded-md"
+            class="inset-[unset] rounded-md bg-background-300"
         >
-            <div class="flex bg-ctp-surface0 text-ctp-text">
+            <div class="flex text-text-300 rounded-md border border-border-300/25">
                 <div class="flex flex-col">
                     <input
                         type="text"
@@ -114,7 +118,7 @@
                         placeholder={attributeType === "TAG"
                             ? "Add a new tag..."
                             : "Add a new link..."}
-                        class="bg-ctp-surface0 px-4 py-2 focus:outline-none"
+                        class="bg-background-300 px-4 py-2 placeholder:text-text-500 focus:outline-none"
                     />
                     {#if attributeType === "LINK"}
                         <input
@@ -122,13 +126,13 @@
                             bind:value={linkAlias}
                             on:keydown={handleEnter}
                             placeholder="Optional name..."
-                            class="bg-ctp-surface0 px-4 py-2 focus:outline-none"
+                            class="bg-background-300 px-4 py-2 placeholder:text-text-500 focus:outline-none"
                         />
                     {/if}
                 </div>
                 <button
                     on:click|preventDefault={addHandler}
-                    class="mr-2 text-ctp-text hover:text-white"
+                    class="mr-2 text-text-300 hover:text-text-100"
                 >
                     <Plus size="16" />
                 </button>
